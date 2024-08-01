@@ -57,3 +57,26 @@ to get the source code and build Inspeqtor locally.
 Inspeqtor is written by [Mike Perham](http://twitter.com/mperham) of [Contributed Systems](http://contribsys.com).  We build awesome open source-based infrastructure to help you build awesome apps.
 
 We also develop [Sidekiq](http://sidekiq.org) and sell [Sidekiq Pro](https://sidekiq.org/products/pro.html), the best Ruby background job processing system.
+
+
+
+Hack around:
+Run code in docker:
+```
+ docker run -it -v $(pwd):/go/src/github.com/mperham/inspeqtor golang:1.10.3 bash
+```
+
+Install deps:
+```
+ go get github.com/jteeuwen/go-bindata/...
+ go get github.com/goccmack/gocc/...
+ cd src/github.com/goccmack/gocc/
+ git checkout 0e2cfc030005b281b2e5a2de04fa7fe1d5063722
+ cd /go
+ go get github.com/goccmack/gocc/...
+ cd src/github.com/mperham/inspeqtor/
+ make assets
+ GOOS=linux GOARCH=amd64 go build -o inspeqtor cmd/main.go
+```
+Yes, we need to checkout old version of code to match go version, sigh
+

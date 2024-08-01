@@ -232,7 +232,7 @@ func (svc *Service) Restart() error {
 	svc.Process.Pid = 0
 	svc.Process.Status = services.Starting
 	go func() {
-		util.Debug("Restarting %s", svc.Name())
+		util.Info("Restarting %s", svc.Name())
 		err := svc.Manager.Restart(svc.Name())
 		if err != nil {
 			util.Warn(err.Error())
