@@ -1,5 +1,5 @@
 name: build
-run-name: build ({{ github.sha }})
+run-name: build (${{ github.sha }})
 
 on:
   workflow_dispatch:
@@ -15,8 +15,6 @@ jobs:
     runs-on: ubuntu-latest
     container: golang:1.10.3
     steps:
-      - uses: actions/checkout@v4
-
       # NOTE: gocc no longer supports old go, but we need it, hence the checkout
       - name: install dependencies
         run: |
@@ -25,6 +23,13 @@ jobs:
           git checkout 0e2cfc030005b281b2e5a2de04fa7fe1d5063722
           go get github.com/goccmack/gocc/...
           go get github.com/jteeuwen/go-bindata/...
+
+      # we must do it without the checkout action, because we're in a custom container
+      - name: clone the repo
+        run: |
+          git clone https://oauth2:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+          git fetch --all
+          git checkout ${{ github.sha }}
     
       - name: generate dependencies
         run: >
@@ -38,3 +43,4 @@ jobs:
         with:
           name: inspeqtor
           path: inspeqtor
+
