@@ -1,0 +1,37 @@
+name: build
+run-name: build ({{ github.sha }})
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: golang:1.10.3
+    steps:
+      - uses: actions/checkout@v4
+
+      # NOTE: gocc no longer supports old go, but we need it, hence the checkout
+      - name: install dependencies
+        run: |
+          go get github.com/goccmack/gocc/... || true
+          cd /go/src/github.com/goccmack/gocc/
+          git checkout 0e2cfc030005b281b2e5a2de04fa7fe1d5063722
+          go get github.com/goccmack/gocc/...
+          go get github.com/jteeuwen/go-bindata/...
+    
+      - name: generate dependencies
+        run: >
+          make assets
+    
+      - name: build binary
+        run: >
+          GOOS=linux GOARCH=amd64 go build -o inspeqtor cmd/main.go
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: inspeqtor
+          path: inspeqtor
