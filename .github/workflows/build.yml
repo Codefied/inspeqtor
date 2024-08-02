@@ -28,7 +28,7 @@ jobs:
 
       - name: get the container id
         run: >
-          echo "id=$(docker --quiet --last 1)" >> $GITHUB_ENV
+          echo "id=$(docker ps --quiet --last 1)" >> $GITHUB_ENV
 
       - name: install dependencies
         run: |
