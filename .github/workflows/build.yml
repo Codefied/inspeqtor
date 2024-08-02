@@ -19,11 +19,11 @@ jobs:
       - name: start the build container
         run: >
           docker run
-            --detach
-            --volume $(pwd):/go/src/github.com/mperham/inspeqtor
-            --workdir       /go/src/github.com/mperham/inspeqtor
-            golang:1.10.3
-            sleep infinity
+          --detach
+          --volume $(pwd):/go/src/github.com/mperham/inspeqtor
+          --workdir       /go/src/github.com/mperham/inspeqtor
+          golang:1.10.3
+          sleep infinity
 
       - name: get the container id
         id: ps
