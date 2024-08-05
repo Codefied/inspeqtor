@@ -1,0 +1,51 @@
+name: build
+run-name: build (${{ github.sha }})
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: start the build container
+        id: run
+        run: >
+          docker run
+          --detach
+          --volume $(pwd):/go/src/github.com/mperham/inspeqtor
+          --workdir       /go/src/github.com/mperham/inspeqtor
+          golang:1.10.3
+          sleep infinity
+
+      - name: get the container id
+        run: >
+          echo "id=$(docker ps --quiet --last 1)" >> $GITHUB_ENV
+
+      - name: install dependencies
+        run: |
+          docker exec ${{ env.id }}  go get github.com/goccmack/gocc/... || true
+          docker exec ${{ env.id }}  git -C /go/src/github.com/goccmack/gocc checkout 0e2cfc030005b281b2e5a2de04fa7fe1d5063722
+          docker exec ${{ env.id }}  go get github.com/goccmack/gocc/...
+          docker exec ${{ env.id }}  go get github.com/jteeuwen/go-bindata/...
+    
+      - name: generate dependencies
+        run: >
+          docker exec ${{ env.id }}  make assets
+    
+      - name: build binary
+        run: >
+          docker exec ${{ env.id }}  go build -o inspeqtor cmd/main.go
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: inspeqtor
+          path: inspeqtor
